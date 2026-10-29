@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { publishSharedReport } from "../lib/scanStore";
 
@@ -12,6 +12,18 @@ export function PhoneScanApp({ onDesktopView }: PhoneScanAppProps) {
   const [reportCode, setReportCode] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function choosePhoto() {
+    fileInputRef.current?.click();
+  }
+
+  function handlePhoto(event: React.ChangeEvent<HTMLInputElement>) {
+    const selected = event.target.files?.[0] ?? null;
+    setImage(selected);
+    setReportCode("");
+    setStatus(selected ? "Photo captured. Review it, then create the analysis report." : "");
+  }
 
   async function publish() {
     if (!image) return;
@@ -47,16 +59,21 @@ export function PhoneScanApp({ onDesktopView }: PhoneScanAppProps) {
           <option>Ingredients and nutrition</option>
           <option>Side or bottom panel</option>
         </select>
-        <label className="phone-capture">
+        <div className="phone-capture">
           <Icon name="camera" size={30} />
           <strong>{image ? image.name : "Take a label photo"}</strong>
           <span>Use bright, even light and keep all text inside the frame.</span>
-          <input accept="image/*" capture="environment" onChange={(event) => setImage(event.target.files?.[0] ?? null)} type="file" />
-        </label>
+          {image && <img className="phone-preview" src={URL.createObjectURL(image)} alt="Selected package label" />}
+          <button className="button outline-button capture-button" onClick={choosePhoto} type="button">
+            <Icon name="camera" size={16} /> {image ? "Retake photo" : "Open camera"}
+          </button>
+          <input ref={fileInputRef} accept="image/*" capture="environment" onChange={handlePhoto} type="file" />
+          <small>Camera unavailable? The button also lets you choose a photo from your gallery.</small>
+        </div>
         <button className="button primary-button phone-submit" disabled={!image || busy} onClick={publish} type="button">
           <Icon name="sparkles" size={16} /> {busy ? "Analysing..." : "Create analysis report"}
         </button>
-        {status && <p className="phone-status">{status}</p>}
+        {status && <p className="phone-status" role="status">{status}</p>}
         {reportCode && <div className="report-code"><span>REPORT CODE</span><strong>{reportCode}</strong><small>Use this code on the laptop dashboard to view the generated analysis.</small></div>}
       </section>
       <p className="phone-safety"><Icon name="shield" size={14} /> Images stay protected. Only the generated report summary is shared.</p>
