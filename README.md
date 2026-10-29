@@ -240,7 +240,7 @@ The project is at the foundation and source-verification stage:
 
 - [ ] Backend application and API
 - [x] Frontend application foundation and Firebase evidence dashboard
-- [ ] OCR and vision adapters
+- [x] OCR and image-quality adapter foundation
 - [ ] Field normalization and evidence model
 - [ ] Deterministic compliance engine
 - [ ] Review and audit workflow
@@ -253,6 +253,11 @@ The current frontend milestone now reads the signed-in user's scan sessions
 from Firestore in real time. It shows the latest captured panel, current
 evidence stage, and truthful scan counts; it still does not display a legal
 pass/fail result before OCR and human-verified rules are available.
+
+The phone upload now also calls the local FastAPI analyzer. It performs basic
+image-quality checks and attempts Tesseract OCR when that runtime is installed.
+OCR output remains candidate evidence and must be confirmed before any future
+rule evaluation.
 
 The three preserved FSSAI PDFs are present under
 `legal-sources/documents/`, but all remain
@@ -309,6 +314,7 @@ status must not be used by the compliance engine.
 
 | Date | Change | Reason | Files | Verification |
 | --- | --- | --- | --- | --- |
+| 2026-10-29 | Connected phone uploads to the FastAPI analyzer with image-quality checks and optional Tesseract OCR, then streamed the result as a scan stage. | Make the phone capture perform real evidence processing instead of only storing an image; preserve explicit uncertainty when OCR is unavailable or the image is weak. | `backend/app/main.py`, `backend/requirements.txt`, `frontend/src/components/ScanDialog.tsx`, `frontend/src/lib/scanStore.ts` | Frontend build and backend analyzer checks required; legal decisions remain disabled until source rules are verified. |
 | 2026-10-29 | Published the complete project as its own Git repository, including Firebase deployment configuration and security rules while excluding local credentials and generated files. | Make the project portable and versioned without exposing `.env.local`, private uploads, dependencies, or build output. | `.gitignore`, repository history | Repository initialized in the project directory; final staged-file audit performed before push. |
 | 2026-10-29 | Connected the dashboard to owner-scoped Firestore listeners and added live scan metrics, latest-evidence status, and Firebase error feedback. | Make the phone upload visible in the dashboard immediately while preserving the distinction between stored evidence and a legal compliance decision. | `frontend/src/App.tsx`, `frontend/src/lib/scanStore.ts`, `frontend/src/styles.css` | TypeScript/Vite production build passed; scans remain evidence-only until OCR and approved rules are connected. |
 | 2026-10-29 | Added Firebase Storage/Firestore persistence, anonymous scan sessions, owner-scoped security rules, and deployment configuration. | Store phone evidence and live scan events safely while preserving the original government-rule and deterministic-engine boundary. | `frontend/src/lib/`, `frontend/.env.example`, `firebase.json`, `firestore.rules`, `storage.rules` | Frontend build passed; Firebase Auth, Firestore, and Storage must be enabled in the Firebase console before a live upload. Storage reads and writes use separate security checks. |

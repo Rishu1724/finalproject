@@ -32,6 +32,12 @@ The first end-to-end milestone should work without requiring paid AI APIs:
 image preprocessing, OCR, normalized fields, approved rule evaluation,
 evidence-linked findings, and human review.
 
+The current analyzer performs image dimensions and brightness checks and
+attempts Tesseract OCR. OCR is explicitly labeled candidate evidence. If the
+Tesseract binary is not installed, the API reports `runtime_not_installed`
+instead of returning invented text. Vision models and deterministic rule
+execution remain separate follow-up stages.
+
 The backend should expose scan-session events for the Adaptive Evidence
 Recovery Loop. Each event records the stage, timestamp, panel, evidence
 quality, unresolved fields, and next recommended capture. Firebase listeners

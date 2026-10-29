@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Icon } from "./Icon";
-import { addScanStage, createScanSession } from "../lib/scanStore";
+import { addScanStage, analyseScanWithBackend, createScanSession } from "../lib/scanStore";
 
 export interface ScanDialogProps {
   readonly onClose: () => void;
@@ -20,7 +20,14 @@ export function ScanDialog({ onClose }: ScanDialogProps) {
       const scanId = await createScanSession(image, panel);
       setStatus("Checking image quality...");
       await addScanStage(scanId, "quality_check", "Image quality checks are queued.");
-      setStatus("Scan saved. OCR and evidence reconciliation are next.");
+      setStatus("Reading label with OCR...");
+      const analysis = await analyseScanWithBackend(image, panel);
+      await addScanStage(
+        scanId,
+        analysis.quality.status === "needs_retake" ? "action_needed" : "reading_label",
+        analysis.quality.issues[0] ?? `OCR status: ${analysis.ocr.status}. Text requires confirmation.`,
+      );
+      setStatus("Evidence saved. OCR is a candidate, not a legal decision.");
       onClose();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "The scan could not be saved.");

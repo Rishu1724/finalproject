@@ -8,6 +8,7 @@ __pycache__/
 node_modules/
 dist/
 *.tsbuildinfo
+/finalproject/
 uploads/
 legal-sources/documents/*.tmp
 legal-sources/documents/*.part

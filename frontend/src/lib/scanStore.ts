@@ -79,6 +79,26 @@ export async function addScanStage(scanId: string, stage: ScanStage, message: st
   });
 }
 
+export async function analyseScanWithBackend(file: File, panel: string) {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("panel", panel);
+  formData.append("product_category", "packaged_food");
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? `http://${window.location.hostname}:8000`;
+  const response = await fetch(`${apiBaseUrl}/api/v1/scans/analyze`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Analysis failed (${response.status}): ${detail}`);
+  }
+  return response.json() as Promise<{
+    quality: { status: string; issues: string[] };
+    ocr: { status: string; text: string };
+  }>;
+}
+
 export function subscribeToUserScans(
   onChange: (scans: ScanRecord[]) => void,
   onError: (error: Error) => void,
