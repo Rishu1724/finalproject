@@ -60,3 +60,11 @@ firebase deploy --only firestore:rules,storage
 Enable Anonymous Authentication, Firestore, and Storage in the Firebase
 console before testing a phone upload. The frontend configuration alone cannot
 enable those services.
+
+### Phone and laptop surfaces
+
+Open `/?mode=phone` on the phone for the focused capture workspace. After
+analysis, the phone displays a six-character report code. Enter that code in
+the laptop dashboard's **Phone report bridge** card. Only the generated report
+summary, image-quality state, OCR status, and recommended action are shared;
+the original image and private scan session remain protected.

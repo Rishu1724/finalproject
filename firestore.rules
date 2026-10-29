@@ -16,5 +16,19 @@ service cloud.firestore {
         allow update, delete: if false;
       }
     }
+
+    match /sharedReports/{reportId} {
+      allow create: if request.auth != null
+        && request.resource.data.reportId == reportId
+        && request.resource.data.code is string
+        && request.resource.data.code.size() == 6
+        && request.resource.data.keys().hasOnly([
+          "reportId", "code", "ownerUid", "panel", "status",
+          "qualityStatus", "qualityIssues", "ocrStatus", "ocrPreview",
+          "createdAt"
+        ]);
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
   }
 }

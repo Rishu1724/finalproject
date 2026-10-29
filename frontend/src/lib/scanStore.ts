@@ -32,6 +32,18 @@ export interface ScanRecord {
   readonly createdAt?: { toMillis?: () => number };
 }
 
+export interface SharedReport {
+  readonly id: string;
+  readonly code: string;
+  readonly panel: string;
+  readonly status: string;
+  readonly qualityStatus: string;
+  readonly qualityIssues: string[];
+  readonly ocrStatus: string;
+  readonly ocrPreview: string;
+  readonly createdAt?: { toMillis?: () => number };
+}
+
 async function ensureAnonymousUser() {
   if (!firebaseAuth) throw new Error("Firebase Authentication is not configured.");
   if (!firebaseAuth.currentUser) await signInAnonymously(firebaseAuth);
@@ -93,10 +105,56 @@ export async function analyseScanWithBackend(file: File, panel: string) {
     const detail = await response.text();
     throw new Error(`Analysis failed (${response.status}): ${detail}`);
   }
+
   return response.json() as Promise<{
     quality: { status: string; issues: string[] };
     ocr: { status: string; text: string };
   }>;
+}
+
+function createReportCode() {
+  return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+export async function publishSharedReport(file: File, panel: string) {
+  if (!isFirebaseConfigured || !firestore) throw new Error("Firebase is not configured.");
+  const uid = await ensureAnonymousUser();
+  const analysis = await analyseScanWithBackend(file, panel);
+  const code = createReportCode();
+  const reportRef = doc(collection(firestore, "sharedReports"));
+  await setDoc(reportRef, {
+    reportId: reportRef.id,
+    code,
+    ownerUid: uid,
+    panel,
+    status: analysis.quality.status === "needs_retake" ? "action_needed" : "needs_human_review",
+    qualityStatus: analysis.quality.status,
+    qualityIssues: analysis.quality.issues,
+    ocrStatus: analysis.ocr.status,
+    ocrPreview: analysis.ocr.text.slice(0, 1000),
+    createdAt: serverTimestamp(),
+  });
+  return { id: reportRef.id, code };
+}
+
+export function subscribeToSharedReport(
+  code: string,
+  onChange: (report: SharedReport | null) => void,
+  onError: (error: Error) => void,
+) {
+  if (!firestore) {
+    onChange(null);
+    return () => undefined;
+  }
+  const reportsQuery = query(collection(firestore, "sharedReports"), where("code", "==", code.toUpperCase()));
+  return onSnapshot(
+    reportsQuery,
+    (snapshot) => {
+      const report = snapshot.docs[0];
+      onChange(report ? ({ id: report.id, ...report.data() } as SharedReport) : null);
+    },
+    onError,
+  );
 }
 
 export function subscribeToUserScans(
