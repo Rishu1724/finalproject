@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "scope": {
+    "jurisdiction": "India",
+    "product_scope": "packaged_food",
+    "regulatory_domains": [
+      "fssai_food_labelling",
+      "legal_metrology_packaged_commodities"
+    ]
+  },
+  "activation_policy": {
+    "required_status": "human_verified",
+    "allowed_authorities": [
+      "Food Safety and Standards Authority of India",
+      "Department of Consumer Affairs",
+      "Government of India e-Gazette",
+      "India Code"
+    ]
+  },
+  "sources": [
+    {
+      "source_id": "FSSAI-REGULATIONS-PORTAL",
+      "authority": "Food Safety and Standards Authority of India",
+      "title": "Food Safety and Standards regulations portal",
+      "document_type": "official_index",
+      "official_url": "https://www.fssai.gov.in/cms/food-safety-and-standards-regulations.php",
+      "status": "index_only",
+      "retrieved_on": null,
+      "document_sha256": null,
+      "notes": "Use this index to locate the exact current labelling regulation and amendments. Do not execute rules from the index page itself."
+    },
+    {
+      "source_id": "DCA-LEGAL-METROLOGY-PORTAL",
+      "authority": "Department of Consumer Affairs, Government of India",
+      "title": "Legal Metrology official portal",
+      "document_type": "official_index",
+      "official_url": "https://consumeraffairs.nic.in/",
+      "status": "index_only",
+      "retrieved_on": null,
+      "document_sha256": null,
+      "notes": "Locate the current Packaged Commodities Rules and each applicable amendment here, then record the exact document URL."
+    },
+    {
+      "source_id": "INDIA-CODE-PORTAL",
+      "authority": "Government of India",
+      "title": "India Code",
+      "document_type": "official_index",
+      "official_url": "https://www.indiacode.nic.in/",
+      "status": "index_only",
+      "retrieved_on": null,
+      "document_sha256": null,
+      "notes": "Reference the Legal Metrology Act and related central legislation. Confirm amendments against the Gazette."
+    },
+    {
+      "source_id": "EGAZETTE-PORTAL",
+      "authority": "Government of India",
+      "title": "Gazette of India",
+      "document_type": "official_index",
+      "official_url": "https://egazette.gov.in/",
+      "status": "index_only",
+      "retrieved_on": null,
+      "document_sha256": null,
+      "notes": "Use Gazette notifications as the primary amendment record where applicable."
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "FSSAI-LABELLING-DISPLAY-REGULATIONS",
+      "expected_filename": "documents/fssai-labelling-display-regulations.pdf",
+      "document_title": "Food Safety and Standards (Labelling and Display) Regulations",
+      "authority": "Food Safety and Standards Authority of India",
+      "official_url": "https://www.fssai.gov.in/docs/food-law/regulations/5fd87c6a0f6adGazette_Notification_Labelling_Display_14_12_2020.pdf",
+      "publication_date": null,
+      "effective_date": null,
+      "retrieved_on": "2026-10-29",
+      "sha256": "b58cf6ae66cbe8e53a06b45dc7e1cb215867ca1b676858c36dc692f44a80bf64",
+      "verification_status": "downloaded_pending_human_verification"
+    },
+    {
+      "document_id": "FSSAI-LABELLING-AMENDMENT-01",
+      "expected_filename": "documents/fssai-labelling-amendment-01.pdf",
+      "document_title": "Applicable FSSAI labelling amendment",
+      "authority": "Food Safety and Standards Authority of India",
+      "official_url": "https://www.fssai.gov.in/docs/food-law/regulations/amendments/labelling-display/Notification%20dt%2024_03_2026_NRC.pdf",
+      "publication_date": null,
+      "effective_date": null,
+      "retrieved_on": "2026-10-29",
+      "sha256": "34ea9ddef5a8c25c0bc6cf7353d042c80285f549962815210019880eaa68dcc9",
+      "verification_status": "downloaded_pending_human_verification"
+    },
+    {
+      "document_id": "LEGAL-METROLOGY-PACKAGED-COMMODITIES",
+      "expected_filename": "documents/legal-metrology-packaged-commodities-rules.pdf",
+      "document_title": "Legal Metrology (Packaged Commodities) Rules",
+      "authority": "Department of Consumer Affairs, Government of India",
+      "official_url": null,
+      "publication_date": null,
+      "effective_date": null,
+      "retrieved_on": null,
+      "sha256": null,
+      "verification_status": "awaiting_exact_official_pdf"
+    },
+    {
+      "document_id": "FSSAI-LABELLING-COMPENDIUM-2025",
+      "expected_filename": "documents/fssai-labelling-compendium-2025.pdf",
+      "document_title": "Compendium of Food Safety and Standards (Labelling and Display) Regulations",
+      "authority": "Food Safety and Standards Authority of India",
+      "official_url": "https://www.fssai.gov.in/docs/food-law/regulations/Comp_Labelling%20Display_Version%20VIII_09_09_2025.pdf",
+      "publication_date": "2025-09-09",
+      "effective_date": null,
+      "retrieved_on": "2026-10-29",
+      "sha256": "37c5c11817f33ecf9b3976d859e09f77952a46571089732127323251211b4d31",
+      "verification_status": "downloaded_pending_human_verification"
+    }
+  ]
+}
