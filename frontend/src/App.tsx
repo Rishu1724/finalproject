@@ -13,7 +13,10 @@ function App() {
   const [scans, setScans] = useState<ScanRecord[]>([]);
   const [firebaseError, setFirebaseError] = useState("");
 
-  useEffect(() => subscribeToUserScans(setScans, (error) => setFirebaseError(error.message)), []);
+  useEffect(() => {
+    if (isPhoneMode) return undefined;
+    return subscribeToUserScans(setScans, (error) => setFirebaseError(error.message));
+  }, [isPhoneMode]);
 
   const latestScan = scans[0];
   const liveMetrics = [

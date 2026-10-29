@@ -68,3 +68,6 @@ analysis, the phone displays a six-character report code. Enter that code in
 the laptop dashboard's **Phone report bridge** card. Only the generated report
 summary, image-quality state, OCR status, and recommended action are shared;
 the original image and private scan session remain protected.
+
+Phone mode does not subscribe to the private `scans` collection. Its Firebase
+operation is limited to creating the report summary after analysis.
