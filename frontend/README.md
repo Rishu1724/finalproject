@@ -71,3 +71,9 @@ the original image and private scan session remain protected.
 
 Phone mode does not subscribe to the private `scans` collection. Its Firebase
 operation is limited to creating the report summary after analysis.
+
+Phone capture requires a real name. The name is stored in `users/{uid}`, copied
+to the private scan record, and included in the shared report summary. Firebase
+Anonymous Authentication remains the technical account identity; the entered
+name is application profile data and should not be treated as identity
+verification.

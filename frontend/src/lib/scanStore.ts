@@ -41,6 +41,7 @@ export interface SharedReport {
   readonly qualityIssues: string[];
   readonly ocrStatus: string;
   readonly ocrPreview: string;
+  readonly displayName: string;
   readonly createdAt?: { toMillis?: () => number };
 }
 
@@ -57,13 +58,17 @@ export async function createScanSession(file: File, panel: string) {
   }
 
   const uid = await ensureAnonymousUser();
+  const displayName = window.localStorage.getItem("metricheck_display_name")?.trim() ?? "";
+  if (displayName.length < 2) throw new Error("Enter your real name before uploading a scan.");
   const scanRef = doc(collection(firestore, "scans"));
-  const imageRef = ref(firebaseStorage, `scans/${uid}/${scanRef.id}/${file.name}`);
+  const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const imageRef = ref(firebaseStorage, `scans/${uid}/${scanRef.id}/${safeFileName}`);
   const upload = await uploadBytes(imageRef, file, { contentType: file.type });
   const imageUrl = await getDownloadURL(upload.ref);
   await setDoc(scanRef, {
     scanId: scanRef.id,
     ownerUid: uid,
+    displayName,
     productCategory: "packaged_food",
     status: "captured",
     currentPanel: panel,
@@ -117,8 +122,15 @@ function createReportCode() {
 }
 
 export async function publishSharedReport(file: File, panel: string) {
-  if (!isFirebaseConfigured || !firestore) throw new Error("Firebase is not configured.");
+  if (!isFirebaseConfigured || !firestore || !firebaseStorage) throw new Error("Firebase is not configured.");
+  const displayName = window.localStorage.getItem("metricheck_display_name")?.trim() ?? "";
+  if (displayName.length < 2) throw new Error("Enter your real name before creating a report.");
   const uid = await ensureAnonymousUser();
+  await setDoc(doc(firestore, "users", uid), {
+    displayName,
+    updatedAt: serverTimestamp(),
+  }, { merge: true });
+  const scanId = await createScanSession(file, panel);
   const analysis = await analyseScanWithBackend(file, panel);
   const code = createReportCode();
   const reportRef = doc(collection(firestore, "sharedReports"));
@@ -126,6 +138,8 @@ export async function publishSharedReport(file: File, panel: string) {
     reportId: reportRef.id,
     code,
     ownerUid: uid,
+    scanId,
+    displayName,
     panel,
     status: analysis.quality.status === "needs_retake" ? "action_needed" : "needs_human_review",
     qualityStatus: analysis.quality.status,
@@ -134,6 +148,7 @@ export async function publishSharedReport(file: File, panel: string) {
     ocrPreview: analysis.ocr.text.slice(0, 1000),
     createdAt: serverTimestamp(),
   });
+  await addScanStage(scanId, "reading_label", `Analysis report ${code} created.`);
   return { id: reportRef.id, code };
 }
 

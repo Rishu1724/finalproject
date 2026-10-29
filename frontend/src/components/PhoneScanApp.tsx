@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { Icon } from "./Icon";
 import { publishSharedReport } from "../lib/scanStore";
 
@@ -12,13 +12,14 @@ export function PhoneScanApp({ onDesktopView }: PhoneScanAppProps) {
   const [reportCode, setReportCode] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
+  const [displayName, setDisplayName] = useState(() => localStorage.getItem("metricheck_display_name") ?? "");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function choosePhoto() {
     fileInputRef.current?.click();
   }
 
-  function handlePhoto(event: React.ChangeEvent<HTMLInputElement>) {
+  function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.target.files?.[0] ?? null;
     setImage(selected);
     setReportCode("");
@@ -27,6 +28,11 @@ export function PhoneScanApp({ onDesktopView }: PhoneScanAppProps) {
 
   async function publish() {
     if (!image) return;
+    if (displayName.trim().length < 2) {
+      setStatus("Enter your real name before creating the report.");
+      return;
+    }
+    localStorage.setItem("metricheck_display_name", displayName.trim());
     setBusy(true);
     setStatus("Uploading and preparing your report...");
     try {
@@ -52,6 +58,9 @@ export function PhoneScanApp({ onDesktopView }: PhoneScanAppProps) {
         <p>Capture one clear panel. We will check the image, read candidate text, and send only the analysis report to your dashboard.</p>
       </section>
       <section className="phone-card">
+        <label className="field-label" htmlFor="phone-name">Your name</label>
+        <input className="phone-name-input" id="phone-name" onChange={(event) => setDisplayName(event.target.value)} placeholder="Enter your real name" value={displayName} />
+        <small className="phone-field-help">Saved with your scan record so reports have a clear owner.</small>
         <label className="field-label" htmlFor="phone-panel">What are you capturing?</label>
         <select id="phone-panel" value={panel} onChange={(event) => setPanel(event.target.value)}>
           <option>Front panel</option>
